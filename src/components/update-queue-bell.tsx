@@ -22,13 +22,13 @@ export function UpdateQueueBell() {
   if (queue.length === 0) return null
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="p-2">
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger className="relative">
         <Bell className="size-6 hover:scale-110 transition-transform relative" />
         {pendingUpdates.length > 0 && (
           <Badge 
             variant="default"
-            className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center"
+            className="absolute -top-2 -right-1 h-4 w-4 rounded-full p-0 flex items-center justify-center"
           >
             {pendingUpdates.length}
           </Badge>

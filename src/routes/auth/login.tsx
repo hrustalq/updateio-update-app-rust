@@ -9,7 +9,7 @@ import socket from '@/entities/auth/qr-code-socket'
 import { useEffect, useState } from 'react'
 import Button from '@/components/ui/button'
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/auth/login')({
   component: QRCode,
 })
 
@@ -19,11 +19,11 @@ function QRCode() {
   const [socketConnected, setSocketConnected] = useState(false)
 
   // Query for generating QR code
-  const { 
+  const {
     data: qrData,
     isLoading: isGenerating,
     error: generateError,
-    refetch 
+    refetch,
   } = useQuery({
     queryKey: ['qrCode'],
     queryFn: generateQRCode,
@@ -36,7 +36,7 @@ function QRCode() {
       }
       return expiresAt - now
     },
-    enabled: socketConnected
+    enabled: socketConnected,
   })
 
   // Mutation for login
@@ -45,12 +45,11 @@ function QRCode() {
     onSuccess: async () => {
       await checkAuth()
       navigate({ to: '/' })
-    }
+    },
   })
 
   useEffect(() => {
     if (qrData) {
-
       if (socketConnected) {
         socket.emit('subscribeToQrCode', qrData.code)
       } else {
@@ -93,10 +92,7 @@ function QRCode() {
     return (
       <div className="flex flex-col gap-y-4 items-center justify-center overflow-hidden h-screen w-screen absolute top-0 left-0 z-50">
         <p className="text-red-500">Не удалось получить QR код</p>
-        <Button 
-          onClick={() => refetch()}
-          className="block"
-        >
+        <Button onClick={() => refetch()} className="block">
           Попробовать снова
         </Button>
       </div>
@@ -114,12 +110,7 @@ function QRCode() {
           <p className="text-lg text-gray-500 dark:text-gray-400">
             Войдите в аккаунт
           </p>
-          <QRCodeSVG 
-            value={qrData.code}
-            size={256}
-            level="H"
-            includeMargin
-          />
+          <QRCodeSVG value={qrData.code} size={256} level="H" includeMargin />
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Отсканируйте этот QR код с помощью приложения в Telegram
           </p>

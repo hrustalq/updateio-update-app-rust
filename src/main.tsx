@@ -10,7 +10,7 @@ import { AuthProvider } from "./providers/auth-provider";
 const queryClient = new QueryClient()
 
 // Create a new router instance
-const router = createRouter({ routeTree })
+const router = createRouter({ routeTree, context: { header: 'Главная' } })
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {

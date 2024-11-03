@@ -13,82 +13,227 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
+import { Route as LayoutImport } from './routes/_layout'
+import { Route as AuthLoginImport } from './routes/auth/login'
+import { Route as LayoutUpdatesImport } from './routes/_layout/updates'
+import { Route as LayoutSubscriptionsImport } from './routes/_layout/subscriptions'
+import { Route as LayoutSettingsImport } from './routes/_layout/settings'
+import { Route as LayoutPatchNotesImport } from './routes/_layout/patch-notes'
+import { Route as LayoutGamesImport } from './routes/_layout/games'
 
 // Create Virtual Routes
 
-const IndexLazyImport = createFileRoute('/')()
+const LayoutIndexLazyImport = createFileRoute('/_layout/')()
 
 // Create/Update Routes
 
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexLazyRoute = IndexLazyImport.update({
+const LayoutIndexLazyRoute = LayoutIndexLazyImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => LayoutRoute,
+} as any).lazy(() => import('./routes/_layout/index.lazy').then((d) => d.Route))
+
+const AuthLoginRoute = AuthLoginImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any)
+
+const LayoutUpdatesRoute = LayoutUpdatesImport.update({
+  id: '/updates',
+  path: '/updates',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSubscriptionsRoute = LayoutSubscriptionsImport.update({
+  id: '/subscriptions',
+  path: '/subscriptions',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSettingsRoute = LayoutSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutPatchNotesRoute = LayoutPatchNotesImport.update({
+  id: '/patch-notes',
+  path: '/patch-notes',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutGamesRoute = LayoutGamesImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => LayoutRoute,
+} as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
+    '/_layout/games': {
+      id: '/_layout/games'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof LayoutGamesImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/patch-notes': {
+      id: '/_layout/patch-notes'
+      path: '/patch-notes'
+      fullPath: '/patch-notes'
+      preLoaderRoute: typeof LayoutPatchNotesImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/subscriptions': {
+      id: '/_layout/subscriptions'
+      path: '/subscriptions'
+      fullPath: '/subscriptions'
+      preLoaderRoute: typeof LayoutSubscriptionsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/updates': {
+      id: '/_layout/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof LayoutUpdatesImport
+      parentRoute: typeof LayoutImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
       parentRoute: typeof rootRoute
+    }
+    '/_layout/': {
+      id: '/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutIndexLazyImport
+      parentRoute: typeof LayoutImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface LayoutRouteChildren {
+  LayoutGamesRoute: typeof LayoutGamesRoute
+  LayoutPatchNotesRoute: typeof LayoutPatchNotesRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutSubscriptionsRoute: typeof LayoutSubscriptionsRoute
+  LayoutUpdatesRoute: typeof LayoutUpdatesRoute
+  LayoutIndexLazyRoute: typeof LayoutIndexLazyRoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutGamesRoute: LayoutGamesRoute,
+  LayoutPatchNotesRoute: LayoutPatchNotesRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutSubscriptionsRoute: LayoutSubscriptionsRoute,
+  LayoutUpdatesRoute: LayoutUpdatesRoute,
+  LayoutIndexLazyRoute: LayoutIndexLazyRoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/login': typeof LoginRoute
+  '': typeof LayoutRouteWithChildren
+  '/games': typeof LayoutGamesRoute
+  '/patch-notes': typeof LayoutPatchNotesRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/subscriptions': typeof LayoutSubscriptionsRoute
+  '/updates': typeof LayoutUpdatesRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/login': typeof LoginRoute
+  '/games': typeof LayoutGamesRoute
+  '/patch-notes': typeof LayoutPatchNotesRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/subscriptions': typeof LayoutSubscriptionsRoute
+  '/updates': typeof LayoutUpdatesRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/login': typeof LoginRoute
+  '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/games': typeof LayoutGamesRoute
+  '/_layout/patch-notes': typeof LayoutPatchNotesRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/subscriptions': typeof LayoutSubscriptionsRoute
+  '/_layout/updates': typeof LayoutUpdatesRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/_layout/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | ''
+    | '/games'
+    | '/patch-notes'
+    | '/settings'
+    | '/subscriptions'
+    | '/updates'
+    | '/auth/login'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login'
+  to:
+    | '/games'
+    | '/patch-notes'
+    | '/settings'
+    | '/subscriptions'
+    | '/updates'
+    | '/auth/login'
+    | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/_layout/games'
+    | '/_layout/patch-notes'
+    | '/_layout/settings'
+    | '/_layout/subscriptions'
+    | '/_layout/updates'
+    | '/auth/login'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  LoginRoute: typeof LoginRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
-  LoginRoute: LoginRoute,
+  LayoutRoute: LayoutRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
 }
 
 export const routeTree = rootRoute
@@ -103,15 +248,47 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/login"
+        "/_layout",
+        "/auth/login"
       ]
     },
-    "/": {
-      "filePath": "index.lazy.tsx"
+    "/_layout": {
+      "filePath": "_layout.tsx",
+      "children": [
+        "/_layout/games",
+        "/_layout/patch-notes",
+        "/_layout/settings",
+        "/_layout/subscriptions",
+        "/_layout/updates",
+        "/_layout/"
+      ]
     },
-    "/login": {
-      "filePath": "login.tsx"
+    "/_layout/games": {
+      "filePath": "_layout/games.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/patch-notes": {
+      "filePath": "_layout/patch-notes.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings": {
+      "filePath": "_layout/settings.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/subscriptions": {
+      "filePath": "_layout/subscriptions.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/updates": {
+      "filePath": "_layout/updates.tsx",
+      "parent": "/_layout"
+    },
+    "/auth/login": {
+      "filePath": "auth/login.tsx"
+    },
+    "/_layout/": {
+      "filePath": "_layout/index.lazy.tsx",
+      "parent": "/_layout"
     }
   }
 }
